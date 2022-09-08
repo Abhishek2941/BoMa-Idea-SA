@@ -28,8 +28,6 @@ const Update = ({ router }) => {
     const date = new Date(formData.get("date"));
     const User = localStorage.getItem("user");
 
-    console.info("router?.query?.id++ ", date)
-
     const data = await fetch(`/api/project/${User}`, {
       method: "PUT",
       headers: {
@@ -37,6 +35,7 @@ const Update = ({ router }) => {
       },
       body: JSON.stringify({ name, state, project_id : Number(router?.query?.id || 0), date })
     });
+    router.push(`/views?id=${User}`);
   };
 
   return (

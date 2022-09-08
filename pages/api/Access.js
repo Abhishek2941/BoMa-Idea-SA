@@ -34,7 +34,7 @@ export default async function handler(
 
     const profile = await prisma.profiles.update({
       where: {
-        // @ts-ignore
+        // @ts-ignore       
         id: id,
       },
       data: {

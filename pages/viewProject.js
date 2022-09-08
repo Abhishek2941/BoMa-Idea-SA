@@ -6,7 +6,7 @@ import { server } from "../config";
 import { Navbar } from "../src/component/Navbar";
 import { withRouter } from "next/router";
 
-const viewProject = ({ router }) => {
+const ViewProject = ({ router }) => {
   const fetcher = url => fetch(url).then(r => r.json());
   const { data, error } = useSwr(`/api/project/${router.query.id}`, fetcher);
 
@@ -66,4 +66,4 @@ const viewProject = ({ router }) => {
   );
 };
 
-export default withRouter(viewProject);
+export default withRouter(ViewProject);
