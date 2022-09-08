@@ -2,31 +2,20 @@ import Head from "next/head";
 import useSwr from "swr";
 import toast from "react-hot-toast";
 import { server } from '../config';
+import { useRouter } from 'next/router'
+
 
 const Home = ({ props }) => {
-  const fetcher = (url) => fetch(url).then((r) => r.json());
-
-
-  const { data , error } = useSwr("/api/profiles", fetcher);
-
+  const router = useRouter()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
 
-    const name = formData.get("name");
-    const email = formData.get("email");
-
-    const data = await fetch("/api/profiles", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email }),
-    });
-
-    toast.success("Posted");
+    const id = formData.get("id");
+    router.push(`/views?id=${id}`)
+    localStorage.setItem('user',id)
   };
 
   return (
@@ -34,7 +23,7 @@ const Home = ({ props }) => {
 
       {/* We will make a handleSubmit function */}
       <form onSubmit={handleSubmit}>
-        <input type="text" name="name" placeholder="Please enter your name" />
+        <input type="text" name="id" placeholder="Please enter user id" />
         <button type="submit">Submit</button>
       </form>
     </div>
@@ -42,16 +31,3 @@ const Home = ({ props }) => {
 };
 
 export default Home;
-
-Home.getInitialProps = async function() {
-
-  const res = await fetch(`${server}/api/profiles`)
-  const data = await res.json()
-
-  console.log(data)
-  console.log(`Showed data fetched. Count ${data.length}`)
-
-  return {
-    products: data
-  }
-}

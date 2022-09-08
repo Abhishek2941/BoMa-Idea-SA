@@ -9,11 +9,11 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     const profiles = await prisma.access.findUnique({
       where: {
-        user_id: +id,
-        project_id: req.body.project_id
+        project_id: +id
       },
       include: {
-        user: true
+        user: true,
+        project: true
       }
     });
 
@@ -21,73 +21,86 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const { name, state } = req.body;
+    const { name, state ,date } = req.body;
 
-    const profile = await prisma.projects.create({
+    const profile = await prisma.project.create({
       data: {
         name,
-        state
+        state,
+        date
       }
     });
 
-    res.status(201).json({ profile });
+    return res.status(201).json({ profile });
   }
 
   if (req.method === "PUT") {
     const id = req.query.id;
 
-    const { name, state } = req.body;
+    const { name, state , project_id , date } = req.body;
 
-    const access = await prisma.access.findUnique({
+    console.info("test++ ",project_id , id)
+
+    const access = await prisma.access.findFirst({
       where: {
         user_id: +id,
-        project_id: req.body.project_id
+        project_id: +project_id,
+        permit : 'Update'
       },
       include: {
-        user: true
+        user: true,
+        project : true
       }
     });
 
+    console.info("access+ ",access)
+
     if (access?.permit === "Update") {
-      const profile = await prisma.projects.update({
-        where: {
+      const profile = await prisma.project.update({
+        where: {    
           // @ts-ignore
-          id: id
+          id: access?.project?.id
         },
         data: {
           name,
-          state
+          state,
+          date
         }
       });
-      res.status(201).json({ message: "Updated" });
+      return res.status(201).json({ message: "Updated" });
     }
-    res.status(201).json({ message: "Forbidden" });
+    return res.status(201).json({ message: "Forbidden" });
   }
 
   if (req.method === "DELETE") {
     const id = req.query.id;
 
-    const access = await prisma.access.findUnique({
+    const access = await prisma.access.findFirst({
       where: {
         user_id: +id,
-        project_id: req.body.project_id
+        project_id: req.body.project_id,
+        permit : 'Delete'
       },
       include: {
         user: true
       }
     });
+    console.info("delete user", access.id);
 
     if (access?.permit === "Delete") {
-      const deleteProject = await prisma.projects.delete({
+
+      const deleteProject = await prisma.project.delete({
         where: {
-          id
+          id: Number(id)
         }
       });
-      res.status(201).json({ message: "Forbidden" });
+      
+      return res.status(201).json({ message: "Forbidden" });
     }
+  
 
-    res.status(201).json({ message: "Deleted" });
+    return res.status(201).json({ message: "Deleted" });
   }
 
-  res.status(200).json({ name: "John Doe" });
+  return res.status(200).json({ name: "John Doe" });
 }
