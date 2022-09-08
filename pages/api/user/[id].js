@@ -3,25 +3,37 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export default async function handler(
-  req,
-  res
-) {
-
-  const { id } = req.query
+export default async function handler(req, res) {
+  const { id } = req.query;
 
   if (req.method === "GET") {
+    let whereFilter = { user_id: +id };
+
+    if (req.query.state !== "All") {
+      whereFilter = {
+        user_id: +id,
+        project: {
+          state: {
+            equals: req.query.state
+          }
+        }
+      };
+    }
+
     const profiles = await prisma.access.findMany({
-      where  : {
-        user_id : +id
+      where: whereFilter,
+      orderBy: {
+        project: {
+          [req.query.orderByField]: req.query.orderBy
+        }
       },
       include: {
-        user : true,
-        project : true
-      },
+        user: true,
+        project: true
+      }
     });
 
-    console.info(profiles)
+    console.info(profiles);
     return res.status(200).json(profiles);
   }
 
@@ -32,8 +44,8 @@ export default async function handler(
       data: {
         name: name,
         // @ts-ignore
-        email: email,
-      },
+        email: email
+      }
     });
 
     res.status(201).json({ profile });
@@ -47,11 +59,11 @@ export default async function handler(
     const profile = await prisma.profiles.update({
       where: {
         // @ts-ignore
-        id: id,
+        id: id
       },
       data: {
-        name: name,
-      },
+        name: name
+      }
     });
 
     res.status(201).json({ message: "Updated" });
