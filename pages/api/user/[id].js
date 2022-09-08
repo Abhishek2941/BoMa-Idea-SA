@@ -7,8 +7,20 @@ export default async function handler(
   req,
   res
 ) {
+
+  const { id } = req.query
+
   if (req.method === "GET") {
-    const profiles = await prisma.user.findMany();
+    const profiles = await prisma.access.findMany({
+      where  : {
+        user_id : +id
+      },
+      include: {
+        user : true,
+      },
+    });
+
+    console.info(profiles)
     return res.status(200).json(profiles);
   }
 
