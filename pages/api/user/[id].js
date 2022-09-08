@@ -33,7 +33,6 @@ export default async function handler(req, res) {
       }
     });
 
-    console.info(profiles);
     return res.status(200).json(profiles);
   }
 

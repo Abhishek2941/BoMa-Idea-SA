@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Head from "next/head";
 import useSwr from "swr";
-import toast from "react-hot-toast";
-import { server } from "../config";
 import { Navbar } from "../src/component/Navbar";
 import { withRouter } from "next/router";
 
@@ -31,25 +28,26 @@ const Views = ({ router }) => {
   },[status,orderByField,orderBy,router.query.id])
 
   const fetchAllProjects = async () => {
-    console.info("router.query.id++ ",router.query.id)
     try {
       const data = await fetch(`/api/user/${router.query.id}?state=${status}&orderByField=${orderByField}&orderBy=${orderBy}`, {
         method: "GET"
       }).json()
       setprojects(data);
     } catch (error) {
-      console.info(error);
     }
   }
 
   const deleteProject = async id => {
+    const User = localStorage.getItem('user')
     if (window.confirm("Delete the item?")) {
       try {
-        const data = await fetch(`/api/project/${id}`, {
-          method: "DELETE"
+        const data = await fetch(`/api/project/${User}?project_id=${id}`, {
+          method: "DELETE",
         });
       } catch (error) {
-        console.info(error);
+      } 
+      finally {
+        fetchAllProjects()
       }
     }
   };
@@ -59,7 +57,7 @@ const Views = ({ router }) => {
   };
 
   const viewProject = id => {
-    router.push(`/viewProject?id=${id}`);
+    router.push(`/ViewProject?id=${id}`);
   };
 
   const onChangeStatus = e => {
@@ -76,12 +74,17 @@ const Views = ({ router }) => {
 
   return (
     <div>
-      <Navbar /> <br />
+      <Navbar state={true} /> <br />
       <br />
       <br />
-      {hasAccess && (
+
+      {/* we have enable the create button base on the project permission from the access table where user have the permission of create any of the project */}
+      {/* {hasAccess && (
         <button onClick={() => router.push(`/create`)}>create</button>
-      )}{" "}
+      )} */}
+
+      {/* we make this button accessable for all the user because the permission of the create will assign to any perticular project and it's kind of infinity loop because without a create button user can't create any project and without creating a project we can't assign a permit read/delete/create/update */}
+      <button onClick={() => router.push(`/create`)}>create</button>
       <br />
       <br />
       <br />
@@ -125,7 +128,6 @@ const Views = ({ router }) => {
           </tr>
         </thead>
         <tbody>
-          {console.info("projects++ ",projects)}
           {projects && projects?.map(({ project, permit }) => {
             return (
               <tr>

@@ -45,16 +45,7 @@ CREATE TABLE "Project" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Access_project_id_key" ON "Access"("project_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Access_user_id_key" ON "Access"("user_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Access_permit_key" ON "Access"("permit");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Access_project_id_user_id_permit_key" ON "Access"("project_id", "user_id", "permit");
+CREATE UNIQUE INDEX "project_id_user_id_permit_unique" ON "Access"("project_id", "user_id", "permit");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
@@ -66,7 +57,7 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "Project_id_key" ON "Project"("id");
 
 -- AddForeignKey
-ALTER TABLE "Access" ADD CONSTRAINT "Access_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Access" ADD CONSTRAINT "Access_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Access" ADD CONSTRAINT "Access_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Access" ADD CONSTRAINT "Access_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,8 +1,4 @@
-import React, { useState, useEffect } from "react";
-import Head from "next/head";
-import useSwr from "swr";
-import toast from "react-hot-toast";
-import { server } from "../config";
+import React from "react";
 import { Navbar } from "../src/component/Navbar";
 import { withRouter } from "next/router";
 
@@ -25,6 +21,8 @@ const Create = ({ router }) => {
         },
         body: JSON.stringify({ name, state, date }),
       });
+
+    router.push(`/views?id=${User}`);
   };
 
   return (

@@ -21,7 +21,6 @@ const Home = ({ props }) => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
 
-      {/* We will make a handleSubmit function */}
       <form onSubmit={handleSubmit}>
         <input type="text" name="id" placeholder="Please enter user id" />
         <button type="submit">Submit</button>

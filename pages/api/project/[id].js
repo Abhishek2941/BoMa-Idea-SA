@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   const { id } = req.query;
 
   if (req.method === "GET") {
-    const profiles = await prisma.access.findUnique({
+    const profiles = await prisma.access.findFirst({
       where: {
         project_id: +id
       },
@@ -39,8 +39,6 @@ export default async function handler(req, res) {
 
     const { name, state , project_id , date } = req.body;
 
-    console.info("test++ ",project_id , id)
-
     const access = await prisma.access.findFirst({
       where: {
         user_id: +id,
@@ -52,8 +50,6 @@ export default async function handler(req, res) {
         project : true
       }
     });
-
-    console.info("access+ ",access)
 
     if (access?.permit === "Update") {
       const profile = await prisma.project.update({
@@ -73,25 +69,25 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "DELETE") {
-    const id = req.query.id;
+    const id = +req.query.id;
+    const project_id = +req.query.project_id
 
     const access = await prisma.access.findFirst({
       where: {
-        user_id: +id,
-        project_id: req.body.project_id,
-        permit : 'Delete'
+          project_id,
+          user_id : id,
+          permit : 'Delete'
       },
       include: {
         user: true
       }
     });
-    console.info("delete user", access.id);
 
     if (access?.permit === "Delete") {
 
       const deleteProject = await prisma.project.delete({
         where: {
-          id: Number(id)
+          id: Number(project_id)
         }
       });
       
